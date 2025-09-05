@@ -79,9 +79,9 @@ def desloca_linhas(estado):
     """
     print(estado)
     for i in range(4):
-        row = estado[i]
-        shifted_row = row[i:] + row[:i]
-        estado[i] = shifted_row
+        row = estado[i] #pega a linha i do bloco
+        shifted_row = row[i:] + row[:i] #desloca a linha um numero i de vezes para a esquerda
+        estado[i] = shifted_row #define a nova linha do bloco
     print(estado)
     return estado
 
@@ -94,9 +94,9 @@ def arrumar_linhas(estado):
     """
     print(estado)
     for i in range(4):
-        row = estado[i]
-        shifted_row = row[-i:] + row[:-i]
-        estado[i] = shifted_row
+        row = estado[i] #pega a linha i do bloco
+        shifted_row = row[-i:] + row[:-i] #desloca a linha um numero i de vezes para a direita
+        estado[i] = shifted_row #define a nova linha do bloco
     print(estado)
     return estado
 
