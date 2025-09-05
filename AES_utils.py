@@ -77,12 +77,12 @@ def desloca_linhas(estado):
     Parâmetros:
     - estado: Matriz de bytes 4x4 representando o bloco de dados (128 bits)
     """
-    print(estado)
+    # print(estado)
     for i in range(4):
         row = estado[i] #pega a linha i do bloco
         shifted_row = row[i:] + row[:i] #desloca a linha um numero i de vezes para a esquerda
         estado[i] = shifted_row #define a nova linha do bloco
-    print(estado)
+    # print(estado)
     return estado
 
 def arruma_linhas(estado):
@@ -92,18 +92,56 @@ def arruma_linhas(estado):
     Parâmetros:
     - estado: Matriz de bytes 4x4 representando o bloco de dados (128 bits)
     """
-    print(estado)
+    # print(estado)
     for i in range(4):
         row = estado[i] #pega a linha i do bloco
         shifted_row = row[-i:] + row[:-i] #desloca a linha um numero i de vezes para a direita
         estado[i] = shifted_row #define a nova linha do bloco
+    # print(estado)
+    return estado
+
+def gmul(a, b):
+    """Multiplicação em GF(2^8)"""
+    p = 0
+    for _ in range(8):
+        if b & 1:       # Se o último bit de b é 1
+            p ^= a      # Soma (XOR) a no produto parcial
+        hi_bit_set = a & 0x80  # Verifica se o bit mais alto de a está setado
+        a = (a << 1) & 0xFF    # Desloca a para a esquerda (como multiplicar por x em GF(2))
+        if hi_bit_set:         # Se o bit mais alto "estourou"
+            a ^= 0x1B          # Reduz módulo o polinômio irreducível x^8 + x^4 + x^3 + x + 1 (0x11B → apenas 0x1B pois já houve shift)
+        b >>= 1  # Desloca b para a direita (como dividir por x)
+    return p
+
+def embaralha_colunas(estado):
+    print(estado)
+    MixColumnMatrix =[
+                [2, 3, 1, 1],
+                [1, 2, 3, 1],
+                [1, 1, 2, 3],
+                [3, 1, 1, 2]
+            ]
+    for i in range(4):  # para cada coluna
+        col = [estado[j][i] for j in range(4)]  # extrai a coluna i
+        nova_col = []
+        for row in range(4):  # multiplica a matriz fixa pela coluna
+            elemento = 0
+            for j in range(4):
+                elemento ^= gmul(MixColumnMatrix[row][j], col[j])
+            nova_col.append(elemento)
+        # substitui a coluna no estado
+        for j in range(4):
+            estado[j][i] = nova_col[j]
     print(estado)
     return estado
 
-def embaralha_colunas():
-    return 0
-
 def desembaralha_colunas():
+    InverseMixColumnMatrix = [
+    [14, 11, 13, 9],
+    [9, 14, 11, 13],
+    [13, 9, 14, 11],
+    [11, 13, 9, 14]
+    ]
     return 0
 
 def xor_com_chave():

@@ -15,13 +15,13 @@ def main():
         mensagem = input("Digite a mensagem a ser cifrada (string): ")
 
         estado =[
-                    [1, 2, 3, 4],
-                    [5, 6, 7, 8],
-                    [9, 10, 11, 12],
-                    [13, 14, 15, 16]
+                    [0xd4, 2, 3, 4],
+                    [0xbf, 6, 7, 8],
+                    [0x5d, 10, 11, 12],
+                    [0x30, 14, 15, 16]
                 ]
         
-        arruma_linhas(estado)
+        embaralha_colunas(estado)
         #Fazer cifragem ou decifragem aqui
 
         print("\nFormato de saída:")
