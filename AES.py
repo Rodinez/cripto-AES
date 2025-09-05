@@ -21,7 +21,7 @@ def main():
                     [13, 14, 15, 16]
                 ]
         
-        arrumar_linhas(estado)
+        arruma_linhas(estado)
         #Fazer cifragem ou decifragem aqui
 
         print("\nFormato de saída:")
