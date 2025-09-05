@@ -1,2 +1,2 @@
-# cripto-RSA
-Our implementation of RSA algorithm 
+# cripto-AES
+Our implementation of AES algorithm 
