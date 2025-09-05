@@ -46,7 +46,7 @@ def substitui_bytes(estado):
     - 4 bits menos significativos → coluna
 
     Parâmetros:
-    - estado: Matriz 4x4 representando o bloco de dados (128 bits)
+    - estado: Matriz de bytes 4x4 representando o bloco de dados (128 bits)
     """
     for i in range(4):
         for j in range(4):
@@ -62,7 +62,7 @@ def reverte_bytes(estado):
     - 4 bits menos significativos → coluna
 
     Parâmetros:
-    - estado: Matriz 4x4 representando o bloco de dados (128 bits)
+    - estado: Matriz de bytes 4x4 representando o bloco de dados (128 bits)
     """
     for i in range(4):
         for j in range(4):
@@ -75,7 +75,7 @@ def desloca_linhas(estado):
     Desloca os bytes do estado para a esquerda, de acordo com o número da linha, para criptografar a mensagem.
 
     Parâmetros:
-    - estado: Matriz 4x4 representando o bloco de dados (128 bits)
+    - estado: Matriz de bytes 4x4 representando o bloco de dados (128 bits)
     """
     print(estado)
     for i in range(4):
@@ -85,12 +85,12 @@ def desloca_linhas(estado):
     print(estado)
     return estado
 
-def arrumar_linhas(estado):
+def arruma_linhas(estado):
     """
     Desloca os bytes do estado para a direita, de acordo com o número da linha, para descriptografar a mensagem.
 
     Parâmetros:
-    - estado: Matriz 4x4 representando o bloco de dados (128 bits)
+    - estado: Matriz de bytes 4x4 representando o bloco de dados (128 bits)
     """
     print(estado)
     for i in range(4):
@@ -103,7 +103,7 @@ def arrumar_linhas(estado):
 def embaralha_colunas():
     return 0
 
-def desembaralha_coluna():
+def desembaralha_colunas():
     return 0
 
 def xor_com_chave():
