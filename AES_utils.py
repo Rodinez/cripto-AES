@@ -1,4 +1,4 @@
-# S-Box (16x16)
+# s-Box (16x16)
 s_box = [
     [0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76],
     [0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0],
@@ -18,6 +18,7 @@ s_box = [
     [0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16]
 ]
 
+# s-Box inversa (16x16)
 inv_s_box = [
     [0x52, 0x09, 0x6A, 0xD5, 0x30, 0x36, 0xA5, 0x38, 0xBF, 0x40, 0xA3, 0x9E, 0x81, 0xF3, 0xD7, 0xFB],
     [0x7C, 0xE3, 0x39, 0x82, 0x9B, 0x2F, 0xFF, 0x87, 0x34, 0x8E, 0x43, 0x44, 0xC4, 0xDE, 0xE9, 0xCB],
@@ -37,23 +38,51 @@ inv_s_box = [
     [0x17, 0x2B, 0x04, 0x7E, 0xBA, 0x77, 0xD6, 0x26, 0xE1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0C, 0x7D],
 ]
 
-def substitui_bytes():
-    return 0
+def substitui_bytes(estado):
+    """
+    Substitui os bytes do estado com base na S-Box para criptografar a mensagem.
+    Cada byte é usado para acessar a S-Box:
+    - 4 bits mais significativos → linha
+    - 4 bits menos significativos → coluna
+
+    Parâmetros:
+    estado : Matriz 4x4 representando o bloco de dados (128 bits)
+    """
+    for i in range(4):
+        for j in range(4):
+            byte = estado[i][j]
+            estado[i][j] = s_box[(byte//16)][byte%16]
+    return estado
+
+def reverte_bytes(estado):
+    """
+    Substitui os bytes do estado com base na S-Box invertida para descriptografar a mensagem.
+    Cada byte é usado para acessar a S-Box invertida:
+    - 4 bits mais significativos → linha
+    - 4 bits menos significativos → coluna
+
+    Parâmetros:
+    estado : Matriz 4x4 representando o bloco de dados (128 bits)
+    """
+    for i in range(4):
+        for j in range(4):
+            byte = estado[i][j]
+            estado[i][j] = inv_s_box[(byte//16)][byte%16]
+    return estado
 
 def desloca_linhas():
-    return 0
-
-def embaralha_colunas():
-    return 0
-
-def xor():
-    return 0
-
-def reverte_bytes():
     return 0
 
 def arrumar_linha():
     return 0
 
+def embaralha_colunas():
+    return 0
+
 def desembaralha_coluna():
     return 0
+
+def xor_com_chave():
+    return 0
+
+
