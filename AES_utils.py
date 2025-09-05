@@ -50,8 +50,8 @@ def substitui_bytes(estado):
     """
     for i in range(4):
         for j in range(4):
-            byte = estado[i][j]
-            estado[i][j] = s_box[(byte//16)][byte%16]
+            byte = estado[i][j] # pega o byte[i][j] do bloco
+            estado[i][j] = s_box[(byte//16)][byte%16] # estado[i][j] recebe o valor da s_box[4 msb do byte][4 lsb do byte]
     return estado
 
 def reverte_bytes(estado):
@@ -66,8 +66,8 @@ def reverte_bytes(estado):
     """
     for i in range(4):
         for j in range(4):
-            byte = estado[i][j]
-            estado[i][j] = inv_s_box[(byte//16)][byte%16]
+            byte = estado[i][j] # pega o byte[i][j] do bloco
+            estado[i][j] = inv_s_box[(byte//16)][byte%16] # estado[i][j] recebe o valor da s_box[4 msb do byte][4 lsb do byte]
     return estado
 
 def desloca_linhas(estado):
@@ -79,10 +79,10 @@ def desloca_linhas(estado):
     """
     # print(estado)
     for i in range(4):
-        row = estado[i] #pega a linha i do bloco
-        shifted_row = row[i:] + row[:i] #desloca a linha um numero i de vezes para a esquerda
-        estado[i] = shifted_row #define a nova linha do bloco
-    # print(estado)
+        row = estado[i] # pega a linha i do bloco
+        shifted_row = row[i:] + row[:i] # desloca a linha um numero i de vezes para a esquerda
+        estado[i] = shifted_row # define a nova linha do bloco
+    print(estado)
     return estado
 
 def arruma_linhas(estado):
@@ -94,9 +94,9 @@ def arruma_linhas(estado):
     """
     # print(estado)
     for i in range(4):
-        row = estado[i] #pega a linha i do bloco
-        shifted_row = row[-i:] + row[:-i] #desloca a linha um numero i de vezes para a direita
-        estado[i] = shifted_row #define a nova linha do bloco
+        row = estado[i] # pega a linha i do bloco
+        shifted_row = row[-i:] + row[:-i] # desloca a linha um numero i de vezes para a direita
+        estado[i] = shifted_row # define a nova linha do bloco
     # print(estado)
     return estado
 
