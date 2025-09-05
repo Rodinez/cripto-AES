@@ -70,11 +70,35 @@ def reverte_bytes(estado):
             estado[i][j] = inv_s_box[(byte//16)][byte%16]
     return estado
 
-def desloca_linhas():
-    return 0
+def desloca_linhas(estado):
+    """
+    Desloca os bytes do estado para a esquerda, de acordo com o número da linha, para criptografar a mensagem.
 
-def arrumar_linhas():
-    return 0
+    Parâmetros:
+    - estado: Matriz 4x4 representando o bloco de dados (128 bits)
+    """
+    print(estado)
+    for i in range(4):
+        row = estado[i]
+        shifted_row = row[i:] + row[:i]
+        estado[i] = shifted_row
+    print(estado)
+    return estado
+
+def arrumar_linhas(estado):
+    """
+    Desloca os bytes do estado para a direita, de acordo com o número da linha, para descriptografar a mensagem.
+
+    Parâmetros:
+    - estado: Matriz 4x4 representando o bloco de dados (128 bits)
+    """
+    print(estado)
+    for i in range(4):
+        row = estado[i]
+        shifted_row = row[-i:] + row[:-i]
+        estado[i] = shifted_row
+    print(estado)
+    return estado
 
 def embaralha_colunas():
     return 0
