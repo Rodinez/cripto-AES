@@ -46,7 +46,7 @@ def substitui_bytes(estado):
     - 4 bits menos significativos → coluna
 
     Parâmetros:
-    estado : Matriz 4x4 representando o bloco de dados (128 bits)
+    - estado: Matriz 4x4 representando o bloco de dados (128 bits)
     """
     for i in range(4):
         for j in range(4):
@@ -62,7 +62,7 @@ def reverte_bytes(estado):
     - 4 bits menos significativos → coluna
 
     Parâmetros:
-    estado : Matriz 4x4 representando o bloco de dados (128 bits)
+    - estado: Matriz 4x4 representando o bloco de dados (128 bits)
     """
     for i in range(4):
         for j in range(4):
@@ -73,7 +73,7 @@ def reverte_bytes(estado):
 def desloca_linhas():
     return 0
 
-def arrumar_linha():
+def arrumar_linhas():
     return 0
 
 def embaralha_colunas():
