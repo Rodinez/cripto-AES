@@ -1,4 +1,4 @@
-# s-Box (16x16)
+# S-Box (16x16) para criptografar a mensagem
 s_box = [
     [0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76],
     [0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0],
@@ -18,7 +18,7 @@ s_box = [
     [0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16]
 ]
 
-# s-Box inversa (16x16)
+# S-Box inversa (16x16) para descriptografar a mensagem
 inv_s_box = [
     [0x52, 0x09, 0x6A, 0xD5, 0x30, 0x36, 0xA5, 0x38, 0xBF, 0x40, 0xA3, 0x9E, 0x81, 0xF3, 0xD7, 0xFB],
     [0x7C, 0xE3, 0x39, 0x82, 0x9B, 0x2F, 0xFF, 0x87, 0x34, 0x8E, 0x43, 0x44, 0xC4, 0xDE, 0xE9, 0xCB],
@@ -40,13 +40,16 @@ inv_s_box = [
 
 def substitui_bytes(estado):
     """
-    Substitui os bytes do estado com base na S-Box para criptografar a mensagem.
+    Substitui os bytes do estado com base na S-Box (criptografia da mensagem).
     Cada byte é usado para acessar a S-Box:
     - 4 bits mais significativos → linha
     - 4 bits menos significativos → coluna
 
-    Parâmetros:
-    - estado: Matriz de bytes 4x4 representando o bloco de dados (128 bits)
+    Entrada:
+    - **estado**: Matriz de bytes 4x4 representando o bloco de dados (128 bits)
+    
+    Saída:
+    - **estado**: Matriz de bytes 4x4 com a aplicação da S-box
     """
     for i in range(4):
         for j in range(4):
@@ -56,13 +59,16 @@ def substitui_bytes(estado):
 
 def reverte_bytes(estado):
     """
-    Substitui os bytes do estado com base na S-Box invertida para descriptografar a mensagem.
+    Substitui os bytes do estado com base na S-Box invertida (descriptografia da mensagem).
     Cada byte é usado para acessar a S-Box invertida:
     - 4 bits mais significativos → linha
     - 4 bits menos significativos → coluna
 
-    Parâmetros:
-    - estado: Matriz de bytes 4x4 representando o bloco de dados (128 bits)
+    Entrada:
+    - **estado**: Matriz de bytes 4x4 representando o bloco de dados (128 bits)
+    
+    Saída:
+    - **estado**: Matriz de bytes 4x4 com a aplicação da S-box inversa
     """
     for i in range(4):
         for j in range(4):
@@ -72,12 +78,14 @@ def reverte_bytes(estado):
 
 def desloca_linhas(estado):
     """
-    Desloca os bytes do estado para a esquerda, de acordo com o número da linha, para criptografar a mensagem.
+    Desloca os bytes do estado para a esquerda, de acordo com o número da linha (criptografia da mensagem).
 
-    Parâmetros:
-    - estado: Matriz de bytes 4x4 representando o bloco de dados (128 bits)
+    Entrada:
+    - **estado**: Matriz de bytes 4x4 representando o bloco de dados (128 bits)
+    
+    Saída:
+    - **estado**: Matriz de bytes 4x4 com deslocamento das linhas 0,1,2 e 3 em 0,1,2 e 3 posições para a esquerda
     """
-    # print(estado)
     for i in range(4):
         row = estado[i] # pega a linha i do bloco
         shifted_row = row[i:] + row[:i] # desloca a linha um numero i de vezes para a esquerda
@@ -87,64 +95,81 @@ def desloca_linhas(estado):
 
 def arruma_linhas(estado):
     """
-    Desloca os bytes do estado para a direita, de acordo com o número da linha, para descriptografar a mensagem.
+    Desloca os bytes do estado para a direita, de acordo com o número da linha (descriptografia da mensagem).
 
-    Parâmetros:
-    - estado: Matriz de bytes 4x4 representando o bloco de dados (128 bits)
+    Entrada:
+    - **estado**: Matriz de bytes 4x4 representando o bloco de dados (128 bits)
+    
+    Saída:
+    - **estado**: Matriz de bytes 4x4 com deslocamento das linhas 0,1,2 e 3 em 0,1,2 e 3 posições para a direita
     """
-    # print(estado)
     for i in range(4):
         row = estado[i] # pega a linha i do bloco
         shifted_row = row[-i:] + row[:-i] # desloca a linha um numero i de vezes para a direita
         estado[i] = shifted_row # define a nova linha do bloco
-    # print(estado)
     return estado
 
 def gmul(a, b):
-    """Multiplicação em GF(2^8)"""
+    """
+    Multiplicação em GF(2^8)
+
+    Entrada:
+    - **a, b**: bytes (0-255) a serem multiplicados no campo GF(2^8)
+
+    Saída:
+    - **p**: resultado da multiplicação de a por b em GF(2^8), reduzido pelo polinômio irreducível x^8 + x^4 + x^3 + x + 1 (0x11B).
+    """
     p = 0
     for _ in range(8):
         if b & 1:       # Se o último bit de b é 1
             p ^= a      # Soma (XOR) a no produto parcial
-        hi_bit_set = a & 0x80  # Verifica se o bit mais alto de a está setado
+        maior_bit_setado = a & 0x80  # Verifica se o bit mais alto de a está setado
         a = (a << 1) & 0xFF    # Desloca a para a esquerda (como multiplicar por x em GF(2))
-        if hi_bit_set:         # Se o bit mais alto "estourou"
+        if maior_bit_setado:         # Se o bit mais alto "estourou"
             a ^= 0x1B          # Reduz módulo o polinômio irreducível x^8 + x^4 + x^3 + x + 1 (0x11B → apenas 0x1B pois já houve shift)
         b >>= 1  # Desloca b para a direita (como dividir por x)
     return p
 
 def embaralha_colunas(estado):
-    print(estado)
-    MixColumnMatrix =[
-                [2, 3, 1, 1],
-                [1, 2, 3, 1],
-                [1, 1, 2, 3],
-                [3, 1, 1, 2]
-            ]
-    for i in range(4):  # para cada coluna
-        col = [estado[j][i] for j in range(4)]  # extrai a coluna i
-        nova_col = []
-        for row in range(4):  # multiplica a matriz fixa pela coluna
-            elemento = 0
-            for j in range(4):
-                elemento ^= gmul(MixColumnMatrix[row][j], col[j])
-            nova_col.append(elemento)
-        # substitui a coluna no estado
-        for j in range(4):
-            estado[j][i] = nova_col[j]
-    print(estado)
+    """
+    Aplica o embaralhamento em cada coluna do estado (criptografia da mensagem).
+
+    Entrada:
+    - **estado**: matriz 4x4 de bytes representando o bloco de dados (128 bits)
+
+    Saída:
+    - **estado**: matriz 4x4 com cada coluna transformada pela multiplicação pela matriz [ [2,3,1,1], [1,2,3,1], [1,1,2,3], [3,1,1,2] ] em GF(2^8)
+    """
+    for i in range(4):
+        a0, a1, a2, a3 = [estado[j][i] for j in range(4)]
+        b0 = (gmul(0x02, a0) ^ gmul(0x03, a1) ^ a2 ^ a3) & 0xFF
+        b1 = (a0 ^ gmul(0x02, a1) ^ gmul(0x03, a2) ^ a3) & 0xFF
+        b2 = (a0 ^ a1 ^ gmul(0x02, a2) ^ gmul(0x03, a3)) & 0xFF
+        b3 = (gmul(0x03, a0) ^ a1 ^ a2 ^ gmul(0x02, a3)) & 0xFF
+        estado[0][i], estado[1][i], estado[2][i], estado[3][i] = b0, b1, b2, b3
     return estado
 
-def desembaralha_colunas():
-    InverseMixColumnMatrix = [
-    [14, 11, 13, 9],
-    [9, 14, 11, 13],
-    [13, 9, 14, 11],
-    [11, 13, 9, 14]
-    ]
-    return 0
+def desembaralha_colunas(estado):
+    """
+    Aplica o desembaralhamento em cada coluna do estado (descriptografia da mensagem).
+
+    Entrada:
+    - **estado**: matriz 4x4 de bytes representando o bloco de dados (128 bits)
+
+    Saída:
+    - **estado**: matriz 4x4 com cada coluna transformada pela multiplicação pela matriz inversa [ [14,11,13,9], [9,14,11,13], [13,9,14,11], [11,13,9,14] ] em GF(2^8)
+    """
+    for i in range(4):
+        a0, a1, a2, a3 = [estado[j][i] for j in range(4)]
+        b0 = (gmul(0x0E, a0) ^ gmul(0x0B, a1) ^ gmul(0x0D, a2) ^ gmul(0x09, a3)) & 0xFF
+        b1 = (gmul(0x09, a0) ^ gmul(0x0E, a1) ^ gmul(0x0B, a2) ^ gmul(0x0D, a3)) & 0xFF
+        b2 = (gmul(0x0D, a0) ^ gmul(0x09, a1) ^ gmul(0x0E, a2) ^ gmul(0x0B, a3)) & 0xFF
+        b3 = (gmul(0x0B, a0) ^ gmul(0x0D, a1) ^ gmul(0x09, a2) ^ gmul(0x0E, a3)) & 0xFF
+        estado[0][i], estado[1][i], estado[2][i], estado[3][i] = b0, b1, b2, b3
+    return estado
 
 def xor_com_chave():
     return 0
 
-
+def expande_chave():
+    return 0
