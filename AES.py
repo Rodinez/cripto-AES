@@ -46,7 +46,7 @@ def main():
             estado = desloca_linhas(estado)
             estado = xor_com_chave(estado, chaves_por_rodada[10])
             
-        blocos_cifrados.append([estado[i][j] for j in range(4) for i in range(4)])
+            blocos_cifrados.append([estado[i][j] for j in range(4) for i in range(4)])
 
         print("\nFormato de saída:")
         print("1 - Hexadecimal")
