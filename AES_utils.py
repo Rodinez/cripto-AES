@@ -1,12 +1,5 @@
 from typing import List
 
-def print_estado_hex(estado, titulo=""):
-    if titulo:
-        print(f"\n--- {titulo} ---")
-    for linha in estado:
-        print(" ".join(f"{b:02X}" for b in linha))
-    print()
-
 # S-Box (16x16) para criptografar a mensagem
 s_box = [
     [0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76],
@@ -86,7 +79,6 @@ def reverte_bytes(estado: List[int]) -> List[int]:
         for j in range(4):
             byte = estado[i][j] # pega o byte[i][j] do bloco
             estado[i][j] = inv_s_box[(byte//16)][byte%16] # estado[i][j] recebe o valor da s_box[4 msb do byte][4 lsb do byte]
-    print_estado_hex(estado, "sub byte")
     return estado
 
 def desloca_linhas(estado: List[int]) -> List[int]:
@@ -119,7 +111,6 @@ def arruma_linhas(estado: List[int]) -> List[int]:
         row = estado[i] # pega a linha i do bloco
         shifted_row = row[-i:] + row[:-i] # desloca a linha um numero i de vezes (0-3) para a direita
         estado[i] = shifted_row # define a nova linha do bloco
-    print_estado_hex(estado, "shift")
     return estado
 
 def gmul(a: int, b: int) -> int:
@@ -182,7 +173,6 @@ def desembaralha_colunas(estado: List[int]) -> List[int]:
         new_byte2 = (gmul(0x0D, old_byte0) ^ gmul(0x09, old_byte1) ^ gmul(0x0E, old_byte2) ^ gmul(0x0B, old_byte3)) & 0xFF # novo byte 2 da coluna
         new_byte3 = (gmul(0x0B, old_byte0) ^ gmul(0x0D, old_byte1) ^ gmul(0x09, old_byte2) ^ gmul(0x0E, old_byte3)) & 0xFF # novo byte 3 da coluna
         estado[0][i], estado[1][i], estado[2][i], estado[3][i] = new_byte0, new_byte1, new_byte2, new_byte3 # Atribuição dos novos bytes na coluna i
-    print_estado_hex(estado, "embaralha")
     return estado
 
 def xor_com_chave(estado: List[List[int]], chave_da_rodada: List[List[int]]) -> List[List[int]]:
@@ -199,7 +189,6 @@ def xor_com_chave(estado: List[List[int]], chave_da_rodada: List[List[int]]) -> 
     for i in range(4):
         for j in range(4):
             estado[i][j] ^= chave_da_rodada[i][j] # XOR do estado com a chave da rodada
-    print_estado_hex(estado, "XOR com chave")
     return estado
 
 def expande_chave(chave: List[int]) -> List[List[int]]:
