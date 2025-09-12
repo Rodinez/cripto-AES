@@ -168,8 +168,21 @@ def desembaralha_colunas(estado):
         estado[0][i], estado[1][i], estado[2][i], estado[3][i] = b0, b1, b2, b3
     return estado
 
-def xor_com_chave():
-    return 0
+def xor_com_chave(estado, chave_expandida):
+    """
+    Aplica o xor (^) do estado com a chave_expandida.
 
-def expande_chave():
+    Entrada:
+    - **estado**: matriz 4x4 de bytes representando o bloco de dados (128 bits)
+    - **chave_expandida**: chave
+
+    Saída:
+    - **estado**: matriz 4x4 com valores depois de aplicar xor com a chave expandida
+    """
+    for i in range(4):
+        for j in range(4):
+            estado[i][j] ^= chave_expandida[i][j]
+    return estado
+
+def expande_chave(chave):
     return 0
