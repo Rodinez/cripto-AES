@@ -14,16 +14,6 @@ def main():
 
         mensagem = input("Digite a mensagem a ser cifrada (string): ")
 
-        estado =[
-                    [0xd4, 2, 3, 4],
-                    [0xbf, 6, 7, 8],
-                    [0x5d, 10, 11, 12],
-                    [0x30, 14, 15, 16]
-                ]
-        
-        embaralha_colunas(estado)
-        #Fazer cifragem ou decifragem aqui
-
         print("\nFormato de saída:")
         print("1 - Hexadecimal")
         print("2 - Decimal")
