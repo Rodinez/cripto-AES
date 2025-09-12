@@ -8,15 +8,20 @@ def main():
 
     if opcao == "1":
         print("\n--- CIFRAGEM ---")
-        chave = input("Digite a chave em string ou hexadecimal: ")
-        
-        if chave.startswith("0x") or chave.startswith("0X"):
-            chave = [int(chave[i:i+2], 16) for i in range(2, 34, 2)]
-        else:
-            chave = list(chave.encode())
+        print("Formato da chave:")
+        print("1 - String")
+        print("2 - Hexadecimal")
+        formato_chave = input("Escolha o formato: ")
+
+        chave_input = input("Digite a chave: ")
+
+        if formato_chave == "1":  
+            chave = list(chave_input.encode())
             while len(chave) < 16:
                 chave.append(0)
             chave = chave[:16]
+        else:  
+            chave = [int(chave_input[i:i+2], 16) for i in range(0, 32, 2)]
 
         mensagem = input("Digite a mensagem a ser cifrada (string): ")
         
@@ -56,26 +61,35 @@ def main():
 
     elif opcao == "2":
         print("\n--- DECIFRAGEM ---")
-        chave = input("Digite a chave (string ou hexadecimal): ")
-        
-        if chave.startswith("0x"):
-            chave = [int(chave[i:i+2], 16) for i in range(2, 34, 2)]
-        else:
-            chave = list(chave.encode())
+        print("Formato da chave:")
+        print("1 - String")
+        print("2 - Hexadecimal")
+        formato_chave = input("Escolha o formato: ")
+
+        chave_input = input("Digite a chave: ")
+
+        if formato_chave == "1":  
+            chave = list(chave_input.encode())
             while len(chave) < 16:
                 chave.append(0)
             chave = chave[:16]
+        else:  
+            chave = [int(chave_input[i:i+2], 16) for i in range(0, 32, 2)]
         
-        mensagem_cifrada = input("Digite a mensagem cifrada decimal ou hexadecimal (espaço entre bytes -> 0x01 0x02 ...): ")
-        
+        print("Formato da mensagem cifrada:")
+        print("1 - Hexadecimal")
+        print("2 - Decimal")
+        formato_msg = input("Escolha o formato: ")
+
+        mensagem_cifrada = input("Digite a mensagem cifrada: ")  
+              
         bytes_cifrados = []
 
-        for byte in mensagem_cifrada.split():
-            if byte.startswith("0x") or byte.startswith("0X"):
-                valor = int(byte, 16)
-            else:
-                valor = int(byte)
-            bytes_cifrados.append(valor)
+        if formato_msg == "1": 
+            bytes_cifrados = [int(mensagem_cifrada[i:i+2], 16) for i in range(0, len(mensagem_cifrada), 2)]
+        else:  
+            for byte in mensagem_cifrada.split():
+                bytes_cifrados.append(int(byte))
         
         
         blocos = [bytes_cifrados[i:i+16] for i in range(0, len(bytes_cifrados), 16)]
