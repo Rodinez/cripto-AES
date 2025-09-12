@@ -8,7 +8,7 @@ def main():
 
     if opcao == "1":
         print("\n--- CIFRAGEM ---")
-        chave = input("Digite a chave (string ou hexadecimal): ")
+        chave = input("Digite a chave em string ou hexadecimal (começando com 0x): ")
         
         if chave.startswith("0x"):
             chave = [int(chave[i:i+2], 16) for i in range(2, 34, 2)]
@@ -48,9 +48,11 @@ def main():
         saida_opcao = input("Escolha o formato da saída: ")
 
         if saida_opcao == "1":
-            print("Mensagem cifrada (hexadecimal): result")
+            for bloco in blocos_cifrados:
+                print(" ".join(f"{b:02X}" for b in bloco))
         else:
-            print("Mensagem cifrada (decimal): result")
+            for bloco in blocos_cifrados:
+                print(" ".join(str(b) for b in bloco))
 
     elif opcao == "2":
         print("\n--- DECIFRAGEM ---")
