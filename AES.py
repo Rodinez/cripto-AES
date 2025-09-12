@@ -125,10 +125,15 @@ def main():
         print()
 
         if saida_opcao == "1":
-            mensagem = bytes(mensagem_bytes).decode()
-            print("Mensagem decifrada (string):", mensagem)
+            try:
+                mensagem = bytes(mensagem_bytes).decode()
+                print("Mensagem decifrada (string):", mensagem)
+            except UnicodeDecodeError:
+                print("utf-8 não conseguiu decodificar algum byte")
+                mensagem_hex = "".join(f"{byte:02X}" for byte in mensagem_bytes)
+                print("\nSaída em hexadecimal em compensação:", mensagem_hex)
         else:
-            mensagem_hex = "".join(f"0x{byte:02X}" for byte in mensagem_bytes)
+            mensagem_hex = "".join(f"{byte:02X}" for byte in mensagem_bytes)
             print("Mensagem decifrada (hexadecimal):", mensagem_hex)
 
     else:
