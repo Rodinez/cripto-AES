@@ -9,10 +9,23 @@ def main():
     if opcao == "1":
         print("\n--- CIFRAGEM ---")
         chave = input("Digite a chave (string ou hexadecimal): ")
-        if not chave.startswith("0x"):
-            chave = "0x" + chave.encode().hex()
+        
+        if chave.startswith("0x"):
+            chave = [int(chave[i:i+2], 16) for i in range(2, 34, 2)]
+        else:
+            chave = list(chave.encode())
+            while len(chave) < 16:
+                chave.append(0)
+            chave = chave[:16]
 
         mensagem = input("Digite a mensagem a ser cifrada (string): ")
+        
+        bytes_do_texto = list(mensagem.encode())
+        while len(bytes_do_texto) % 16 != 0:
+            bytes_do_texto.append(0)
+        blocos = [bytes_do_texto[i:i+16] for i in range(0, len(bytes_do_texto), 16)]
+        
+        
 
         print("\nFormato de saída:")
         print("1 - Hexadecimal")
