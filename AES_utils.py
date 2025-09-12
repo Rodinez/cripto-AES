@@ -148,6 +148,7 @@ def embaralha_colunas(estado: List[int]) -> List[int]:
     """
     for i in range(4):
         old_byte0, old_byte1, old_byte2, old_byte3 = [estado[j][i] for j in range(4)] # Pega os 4 bytes da coluna i
+        # multiplicação (gmul) e soma (XOR) em GF(2^8), com a garantia do resultado dentro de um byte 
         new_byte0 = (gmul(0x02, old_byte0) ^ gmul(0x03, old_byte1) ^ old_byte2 ^ old_byte3) & 0xFF # novo byte 0 da coluna
         new_byte1 = (old_byte0 ^ gmul(0x02, old_byte1) ^ gmul(0x03, old_byte2) ^ old_byte3) & 0xFF # novo byte 1 da coluna
         new_byte2 = (old_byte0 ^ old_byte1 ^ gmul(0x02, old_byte2) ^ gmul(0x03, old_byte3)) & 0xFF # novo byte 2 da coluna
@@ -167,6 +168,7 @@ def desembaralha_colunas(estado: List[int]) -> List[int]:
     """
     for i in range(4):
         old_byte0, old_byte1, old_byte2, old_byte3 = [estado[j][i] for j in range(4)] # Pega os 4 bytes da coluna i
+        # multiplicação (gmul) e soma (XOR) em GF(2^8), com a garantia do resultado dentro de um byte 
         new_byte0 = (gmul(0x0E, old_byte0) ^ gmul(0x0B, old_byte1) ^ gmul(0x0D, old_byte2) ^ gmul(0x09, old_byte3)) & 0xFF # novo byte 0 da coluna
         new_byte1 = (gmul(0x09, old_byte0) ^ gmul(0x0E, old_byte1) ^ gmul(0x0B, old_byte2) ^ gmul(0x0D, old_byte3)) & 0xFF # novo byte 1 da coluna
         new_byte2 = (gmul(0x0D, old_byte0) ^ gmul(0x09, old_byte1) ^ gmul(0x0E, old_byte2) ^ gmul(0x0B, old_byte3)) & 0xFF # novo byte 2 da coluna
