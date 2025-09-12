@@ -45,7 +45,6 @@ def main():
             estado = substitui_bytes(estado)
             estado = desloca_linhas(estado)
             estado = xor_com_chave(estado, chaves_por_rodada[10])
-            
             blocos_cifrados.append([estado[i][j] for j in range(4) for i in range(4)])
 
         print("\nFormato de saída:")
@@ -55,11 +54,9 @@ def main():
         print()
 
         if saida_opcao == "1":
-            for bloco in blocos_cifrados:
-                print("".join(f"{byte:02X}" for byte in bloco))
+            print("".join(f"{byte:02X}" for bloco in blocos_cifrados for byte in bloco))
         else:
-            for bloco in blocos_cifrados:
-                print(" ".join(str(byte) for byte in bloco))
+            print(" ".join(str(byte) for bloco in blocos_cifrados for byte in bloco))
 
     elif opcao == "2":
         print("\n--- DECIFRAGEM ---")
