@@ -25,7 +25,12 @@ def main():
             bytes_do_texto.append(0)
         blocos = [bytes_do_texto[i:i+16] for i in range(0, len(bytes_do_texto), 16)]
         
+        chaves_da_rodada = expande_chave(chave)
+        blocos_cifrados = []
         
+        for bloco in blocos:
+            estado = [bloco[i:i+4] for i in range(0, 16, 4)]
+            estado = xor_com_chave(estado, chaves_da_rodada[0])
 
         print("\nFormato de saída:")
         print("1 - Hexadecimal")
