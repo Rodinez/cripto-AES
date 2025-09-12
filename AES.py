@@ -106,12 +106,12 @@ def main():
             estado = [[bloco[linha + 4*coluna] for coluna in range(4)] for linha in range(4)]
             estado = xor_com_chave(estado, chaves_por_rodada[10])
             for rodada in range(9, 0, -1):
-                estado = reverte_bytes(estado)
                 estado = arruma_linhas(estado)
-                estado = desembaralha_colunas(estado)
+                estado = reverte_bytes(estado)
                 estado = xor_com_chave(estado, chaves_por_rodada[rodada])
-            estado = reverte_bytes(estado)
+                estado = desembaralha_colunas(estado)
             estado = arruma_linhas(estado)
+            estado = reverte_bytes(estado)
             estado = xor_com_chave(estado, chaves_por_rodada[0])
             
             blocos_decifrados.append([estado[i][j] for j in range(4) for i in range(4)])
