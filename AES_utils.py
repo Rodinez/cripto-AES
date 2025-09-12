@@ -38,6 +38,9 @@ inv_s_box = [
     [0x17, 0x2B, 0x04, 0x7E, 0xBA, 0x77, 0xD6, 0x26, 0xE1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0C, 0x7D],
 ]
 
+# Constante das rodadas 1      2     3     4     5     6     7     8     9    10
+constante_da_rodada = [0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1B, 0x36]
+
 def substitui_bytes(estado):
     """
     Substitui os bytes do estado com base na S-Box (criptografia da mensagem).
@@ -84,11 +87,11 @@ def desloca_linhas(estado):
     - **estado**: Matriz de bytes 4x4 representando o bloco de dados (128 bits)
     
     Saída:
-    - **estado**: Matriz de bytes 4x4 com deslocamento das linhas 0,1,2 e 3 em 0,1,2 e 3 posições para a esquerda
+    - **estado**: Matriz de bytes 4x4 com deslocamento das linhas em 0, 1, 2 e 3 posições para a esquerda respectivamente
     """
     for i in range(4):
         row = estado[i] # pega a linha i do bloco
-        shifted_row = row[i:] + row[:i] # desloca a linha um numero i de vezes para a esquerda
+        shifted_row = row[i:] + row[:i] # desloca a linha um numero i de vezes (0-3) para a esquerda
         estado[i] = shifted_row # define a nova linha do bloco
     print(estado)
     return estado
@@ -101,11 +104,11 @@ def arruma_linhas(estado):
     - **estado**: Matriz de bytes 4x4 representando o bloco de dados (128 bits)
     
     Saída:
-    - **estado**: Matriz de bytes 4x4 com deslocamento das linhas 0,1,2 e 3 em 0,1,2 e 3 posições para a direita
+    - **estado**: Matriz de bytes 4x4 com deslocamento das linhas em 0, 1, 2 e 3 posições para a direita respectivamente
     """
     for i in range(4):
         row = estado[i] # pega a linha i do bloco
-        shifted_row = row[-i:] + row[:-i] # desloca a linha um numero i de vezes para a direita
+        shifted_row = row[-i:] + row[:-i] # desloca a linha um numero i de vezes (0-3) para a direita
         estado[i] = shifted_row # define a nova linha do bloco
     return estado
 
@@ -117,15 +120,16 @@ def gmul(a, b):
     - **a, b**: bytes (0-255) a serem multiplicados no campo GF(2^8)
 
     Saída:
-    - **p**: resultado da multiplicação de a por b em GF(2^8), reduzido pelo polinômio irreducível x^8 + x^4 + x^3 + x + 1 (0x11B).
+    - **p**: resultado da multiplicação de a por b em GF(2^8) reduzido pelo polinômio irreducível x^8 + x^4 + x^3 + x + 1 (0x11B).
     """
     p = 0
     for _ in range(8):
         if b & 1:       # Se o último bit de b é 1
-            p ^= a      # Soma (XOR) a no produto parcial
+            p ^= a      # XOR com a no produto parcial
         maior_bit_setado = a & 0x80  # Verifica se o bit mais alto de a está setado
         a = (a << 1) & 0xFF    # Desloca a para a esquerda (como multiplicar por x em GF(2))
-        if maior_bit_setado:         # Se o bit mais alto "estourou"
+        
+        if maior_bit_setado:         # Se houve overflow com o shift no maior bit de a
             a ^= 0x1B          # Reduz módulo o polinômio irreducível x^8 + x^4 + x^3 + x + 1 (0x11B → apenas 0x1B pois já houve shift)
         b >>= 1  # Desloca b para a direita (como dividir por x)
     return p
@@ -141,12 +145,12 @@ def embaralha_colunas(estado):
     - **estado**: matriz 4x4 com cada coluna transformada pela multiplicação pela matriz [ [2,3,1,1], [1,2,3,1], [1,1,2,3], [3,1,1,2] ] em GF(2^8)
     """
     for i in range(4):
-        a0, a1, a2, a3 = [estado[j][i] for j in range(4)]
-        b0 = (gmul(0x02, a0) ^ gmul(0x03, a1) ^ a2 ^ a3) & 0xFF
-        b1 = (a0 ^ gmul(0x02, a1) ^ gmul(0x03, a2) ^ a3) & 0xFF
-        b2 = (a0 ^ a1 ^ gmul(0x02, a2) ^ gmul(0x03, a3)) & 0xFF
-        b3 = (gmul(0x03, a0) ^ a1 ^ a2 ^ gmul(0x02, a3)) & 0xFF
-        estado[0][i], estado[1][i], estado[2][i], estado[3][i] = b0, b1, b2, b3
+        old_byte0, old_byte1, old_byte2, old_byte3 = [estado[j][i] for j in range(4)] # Pega os 4 bytes da coluna i
+        new_byte0 = (gmul(0x02, old_byte0) ^ gmul(0x03, old_byte1) ^ old_byte2 ^ old_byte3) & 0xFF # novo byte 0 da coluna
+        new_byte1 = (old_byte0 ^ gmul(0x02, old_byte1) ^ gmul(0x03, old_byte2) ^ old_byte3) & 0xFF # novo byte 1 da coluna
+        new_byte2 = (old_byte0 ^ old_byte1 ^ gmul(0x02, old_byte2) ^ gmul(0x03, old_byte3)) & 0xFF # novo byte 2 da coluna
+        new_byte3 = (gmul(0x03, old_byte0) ^ old_byte1 ^ old_byte2 ^ gmul(0x02, old_byte3)) & 0xFF # novo byte 3 da coluna
+        estado[0][i], estado[1][i], estado[2][i], estado[3][i] = new_byte0, new_byte1, new_byte2, new_byte3 # Atribuição dos novos bytes na coluna i
     return estado
 
 def desembaralha_colunas(estado):
@@ -160,29 +164,54 @@ def desembaralha_colunas(estado):
     - **estado**: matriz 4x4 com cada coluna transformada pela multiplicação pela matriz inversa [ [14,11,13,9], [9,14,11,13], [13,9,14,11], [11,13,9,14] ] em GF(2^8)
     """
     for i in range(4):
-        a0, a1, a2, a3 = [estado[j][i] for j in range(4)]
-        b0 = (gmul(0x0E, a0) ^ gmul(0x0B, a1) ^ gmul(0x0D, a2) ^ gmul(0x09, a3)) & 0xFF
-        b1 = (gmul(0x09, a0) ^ gmul(0x0E, a1) ^ gmul(0x0B, a2) ^ gmul(0x0D, a3)) & 0xFF
-        b2 = (gmul(0x0D, a0) ^ gmul(0x09, a1) ^ gmul(0x0E, a2) ^ gmul(0x0B, a3)) & 0xFF
-        b3 = (gmul(0x0B, a0) ^ gmul(0x0D, a1) ^ gmul(0x09, a2) ^ gmul(0x0E, a3)) & 0xFF
-        estado[0][i], estado[1][i], estado[2][i], estado[3][i] = b0, b1, b2, b3
+        old_byte0, old_byte1, old_byte2, old_byte3 = [estado[j][i] for j in range(4)] # Pega os 4 bytes da coluna i
+        new_byte0 = (gmul(0x0E, old_byte0) ^ gmul(0x0B, old_byte1) ^ gmul(0x0D, old_byte2) ^ gmul(0x09, old_byte3)) & 0xFF # novo byte 0 da coluna
+        new_byte1 = (gmul(0x09, old_byte0) ^ gmul(0x0E, old_byte1) ^ gmul(0x0B, old_byte2) ^ gmul(0x0D, old_byte3)) & 0xFF # novo byte 1 da coluna
+        new_byte2 = (gmul(0x0D, old_byte0) ^ gmul(0x09, old_byte1) ^ gmul(0x0E, old_byte2) ^ gmul(0x0B, old_byte3)) & 0xFF # novo byte 2 da coluna
+        new_byte3 = (gmul(0x0B, old_byte0) ^ gmul(0x0D, old_byte1) ^ gmul(0x09, old_byte2) ^ gmul(0x0E, old_byte3)) & 0xFF # novo byte 3 da coluna
+        estado[0][i], estado[1][i], estado[2][i], estado[3][i] = new_byte0, new_byte1, new_byte2, new_byte3 # Atribuição dos novos bytes na coluna i
     return estado
 
-def xor_com_chave(estado, chave_expandida):
+def xor_com_chave(estado, chave_da_rodada):
     """
-    Aplica o xor (^) do estado com a chave_expandida.
+    Aplica o XOR (^) do estado com a chave_da_rodada.
 
     Entrada:
     - **estado**: matriz 4x4 de bytes representando o bloco de dados (128 bits)
-    - **chave_expandida**: chave
+    - **chave_da_rodada**: chave
 
     Saída:
-    - **estado**: matriz 4x4 com valores depois de aplicar xor com a chave expandida
+    - **estado**: matriz 4x4 com valores depois de aplicar XOR com a chave expandida
     """
     for i in range(4):
         for j in range(4):
-            estado[i][j] ^= chave_expandida[i][j]
+            estado[i][j] ^= chave_da_rodada[i][j] # XOR do estado com a chave da rodada
     return estado
 
 def expande_chave(chave):
-    return 0
+    """
+    Expande a chave de 128 bits (16 bytes) para gerar todas as subchaves das rodadas do AES
+
+    Entrada:
+    - **chave**: lista de 16 bytes representando a chave original (128 bits)
+
+    Saída:
+    - **chaves_por_rodada**: lista de 11 subchaves que serão usadas em cada rodada
+    """
+    lista_de_palavras = []
+    for i in range(4):
+        lista_de_palavras.append(chave[4*i: 4*(i+1)]) # 4 primeiras palavra são os 16 bytes iniciais da chave
+    
+    chaves_por_rodada = []
+    for i in range(4, 44):
+        temp = list(lista_de_palavras[i-1])  # Pega a última palavra gerada (usa-se list para copiar o valor)
+        if i % 4 == 0: # A cada início de rodada...
+            temp = temp[1:] + temp[:1] # Rotação de 1 posição à esquerda
+            temp = [s_box[byte // 16][byte % 16] for byte in temp] # Substituição de cada byte com a S-box
+            temp[0] ^= constante_da_rodada[(i // 4) - 1] # Primeiro byte XOR constante da rodada
+        lista_de_palavras.append([lista_de_palavras[i - 4][j] ^ temp[j] for j in range(4)]) # XOR da palavra 4 posições atrás com a palavra do temp
+        
+        if (i + 1) % 4 == 0: # no final de cada 128 bits / 16 bytes / 4 palavras / 1 rodada...
+            subchave = lista_de_palavras[i - 3 : i + 1] # Agrupa as 4 palavras últimas geradas como subchave
+            chaves_por_rodada.append([list(palavra) for palavra in subchave]) # Adiciona a subchave a lista de chaves por rodada
+    return chaves_por_rodada
