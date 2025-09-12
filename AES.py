@@ -59,7 +59,7 @@ def main():
                 print("".join(f"{byte:02X}" for byte in bloco))
         else:
             for bloco in blocos_cifrados:
-                print("".join(str(byte) for byte in bloco))
+                print(" ".join(str(byte) for byte in bloco))
 
     elif opcao == "2":
         print("\n--- DECIFRAGEM ---")
