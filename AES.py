@@ -12,7 +12,7 @@ def main():
         print("1 - String")
         print("2 - Hexadecimal")
         formato_chave = input("Escolha o formato: ")
-
+        print()
         chave_input = input("Digite a chave: ")
 
         if formato_chave == "1":  
@@ -22,19 +22,20 @@ def main():
             chave = chave[:16]
         else:  
             chave = [int(chave_input[i:i+2], 16) for i in range(0, 32, 2)]
-
+        
+        print()
         mensagem = input("Digite a mensagem a ser cifrada (string): ")
         
         bytes_do_texto = list(mensagem.encode())
         while len(bytes_do_texto) % 16 != 0:
             bytes_do_texto.append(0)
         blocos = [bytes_do_texto[i:i+16] for i in range(0, len(bytes_do_texto), 16)]
-        
+                
         chaves_por_rodada = expande_chave(chave)
         blocos_cifrados = []
         
         for bloco in blocos:
-            estado = [bloco[i:i+4] for i in range(0, 16, 4)]
+            estado = [[bloco[linha + 4*coluna] for coluna in range(4)] for linha in range(4)]
             estado = xor_com_chave(estado, chaves_por_rodada[0])
             for rodada in range(1,10):
                 estado = substitui_bytes(estado)
@@ -45,19 +46,20 @@ def main():
             estado = desloca_linhas(estado)
             estado = xor_com_chave(estado, chaves_por_rodada[10])
             
-        blocos_cifrados.append([estado[i][j] for i in range(4) for j in range(4)])
+        blocos_cifrados.append([estado[i][j] for j in range(4) for i in range(4)])
 
         print("\nFormato de saída:")
         print("1 - Hexadecimal")
         print("2 - Decimal")
         saida_opcao = input("Escolha o formato da saída: ")
+        print()
 
         if saida_opcao == "1":
             for bloco in blocos_cifrados:
-                print(" ".join(f"{byte:02X}" for byte in bloco))
+                print("".join(f"{byte:02X}" for byte in bloco))
         else:
             for bloco in blocos_cifrados:
-                print(" ".join(str(byte) for byte in bloco))
+                print("".join(str(byte) for byte in bloco))
 
     elif opcao == "2":
         print("\n--- DECIFRAGEM ---")
@@ -65,8 +67,10 @@ def main():
         print("1 - String")
         print("2 - Hexadecimal")
         formato_chave = input("Escolha o formato: ")
+        print()
 
         chave_input = input("Digite a chave: ")
+        print()
 
         if formato_chave == "1":  
             chave = list(chave_input.encode())
@@ -80,8 +84,10 @@ def main():
         print("1 - Hexadecimal")
         print("2 - Decimal")
         formato_msg = input("Escolha o formato: ")
+        print()
 
-        mensagem_cifrada = input("Digite a mensagem cifrada: ")  
+        mensagem_cifrada = input("Digite a mensagem cifrada: ")
+        print()  
               
         bytes_cifrados = []
 
@@ -97,7 +103,7 @@ def main():
         blocos_decifrados = []
         
         for bloco in blocos:
-            estado = [bloco[i:i+4] for i in range(0, 16, 4)]
+            estado = [[bloco[linha + 4*coluna] for coluna in range(4)] for linha in range(4)]
             estado = xor_com_chave(estado, chaves_por_rodada[10])
             for rodada in range(9, 0, -1):
                 estado = reverte_bytes(estado)
@@ -108,7 +114,7 @@ def main():
             estado = arruma_linhas(estado)
             estado = xor_com_chave(estado, chaves_por_rodada[0])
             
-            blocos_decifrados.append([estado[i][j] for i in range(4) for j in range(4)])
+            blocos_decifrados.append([estado[i][j] for j in range(4) for i in range(4)])
             
         mensagem_bytes = [byte for bloco in blocos_decifrados for byte in bloco]
         
@@ -116,12 +122,13 @@ def main():
         print("1 - String")
         print("2 - Hexadecimal")
         saida_opcao = input("Escolha o formato da saída: ")
+        print()
 
         if saida_opcao == "1":
             mensagem = bytes(mensagem_bytes).decode()
             print("Mensagem decifrada (string):", mensagem)
         else:
-            mensagem_hex = " ".join(f"0x{byte:02X}" for byte in mensagem_bytes)
+            mensagem_hex = "".join(f"0x{byte:02X}" for byte in mensagem_bytes)
             print("Mensagem decifrada (hexadecimal):", mensagem_hex)
 
     else:

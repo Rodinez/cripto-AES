@@ -95,7 +95,6 @@ def desloca_linhas(estado: List[int]) -> List[int]:
         row = estado[i] # pega a linha i do bloco
         shifted_row = row[i:] + row[:i] # desloca a linha um numero i de vezes (0-3) para a esquerda
         estado[i] = shifted_row # define a nova linha do bloco
-    print(estado)
     return estado
 
 def arruma_linhas(estado: List[int]) -> List[int]:
@@ -207,6 +206,8 @@ def expande_chave(chave: List[int]) -> List[List[int]]:
         lista_de_palavras.append(chave[4*i: 4*(i+1)]) # 4 primeiras palavra são os 16 bytes iniciais da chave
     
     chaves_por_rodada = []
+    primeira_chave = [[lista_de_palavras[j][i] for j in range(4)] for i in range(4)] # Transposta da primeira chave
+    chaves_por_rodada.append(primeira_chave)
     for i in range(4, 44):
         temp = list(lista_de_palavras[i-1])  # Pega a última palavra gerada (usa-se list para copiar o valor)
         if i % 4 == 0: # A cada início de rodada...
@@ -217,5 +218,6 @@ def expande_chave(chave: List[int]) -> List[List[int]]:
         
         if (i + 1) % 4 == 0: # no final de cada 128 bits / 16 bytes / 4 palavras / 1 rodada...
             subchave = lista_de_palavras[i - 3 : i + 1] # Agrupa as 4 palavras últimas geradas como subchave
-            chaves_por_rodada.append([list(palavra) for palavra in subchave]) # Adiciona a subchave a lista de chaves por rodada
+            subchave_t = [[subchave[j][i] for j in range(4)] for i in range(4)] # Transposta da subchave para as linhas virarem colunas e vice e versa
+            chaves_por_rodada.append(subchave_t) # Adiciona a subchave a lista de chaves por rodada
     return chaves_por_rodada
