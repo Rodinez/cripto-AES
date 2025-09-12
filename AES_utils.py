@@ -1,3 +1,5 @@
+from typing import List
+
 # S-Box (16x16) para criptografar a mensagem
 s_box = [
     [0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76],
@@ -41,7 +43,7 @@ inv_s_box = [
 # Constante das rodadas 1      2     3     4     5     6     7     8     9    10
 constante_da_rodada = [0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1B, 0x36]
 
-def substitui_bytes(estado):
+def substitui_bytes(estado: List[int]) -> List[int]:
     """
     Substitui os bytes do estado com base na S-Box (criptografia da mensagem).
     Cada byte é usado para acessar a S-Box:
@@ -60,7 +62,7 @@ def substitui_bytes(estado):
             estado[i][j] = s_box[(byte//16)][byte%16] # estado[i][j] recebe o valor da s_box[4 msb do byte][4 lsb do byte]
     return estado
 
-def reverte_bytes(estado):
+def reverte_bytes(estado: List[int]) -> List[int]:
     """
     Substitui os bytes do estado com base na S-Box invertida (descriptografia da mensagem).
     Cada byte é usado para acessar a S-Box invertida:
@@ -79,7 +81,7 @@ def reverte_bytes(estado):
             estado[i][j] = inv_s_box[(byte//16)][byte%16] # estado[i][j] recebe o valor da s_box[4 msb do byte][4 lsb do byte]
     return estado
 
-def desloca_linhas(estado):
+def desloca_linhas(estado: List[int]) -> List[int]:
     """
     Desloca os bytes do estado para a esquerda, de acordo com o número da linha (criptografia da mensagem).
 
@@ -96,7 +98,7 @@ def desloca_linhas(estado):
     print(estado)
     return estado
 
-def arruma_linhas(estado):
+def arruma_linhas(estado: List[int]) -> List[int]:
     """
     Desloca os bytes do estado para a direita, de acordo com o número da linha (descriptografia da mensagem).
 
@@ -112,7 +114,7 @@ def arruma_linhas(estado):
         estado[i] = shifted_row # define a nova linha do bloco
     return estado
 
-def gmul(a, b):
+def gmul(a: int, b: int) -> int:
     """
     Multiplicação em GF(2^8)
 
@@ -134,7 +136,7 @@ def gmul(a, b):
         b >>= 1  # Desloca b para a direita (como dividir por x)
     return p
 
-def embaralha_colunas(estado):
+def embaralha_colunas(estado: List[int]) -> List[int]:
     """
     Aplica o embaralhamento em cada coluna do estado (criptografia da mensagem).
 
@@ -153,7 +155,7 @@ def embaralha_colunas(estado):
         estado[0][i], estado[1][i], estado[2][i], estado[3][i] = new_byte0, new_byte1, new_byte2, new_byte3 # Atribuição dos novos bytes na coluna i
     return estado
 
-def desembaralha_colunas(estado):
+def desembaralha_colunas(estado: List[int]) -> List[int]:
     """
     Aplica o desembaralhamento em cada coluna do estado (descriptografia da mensagem).
 
@@ -172,7 +174,7 @@ def desembaralha_colunas(estado):
         estado[0][i], estado[1][i], estado[2][i], estado[3][i] = new_byte0, new_byte1, new_byte2, new_byte3 # Atribuição dos novos bytes na coluna i
     return estado
 
-def xor_com_chave(estado, chave_da_rodada):
+def xor_com_chave(estado: List[List[int]], chave_da_rodada: List[List[int]]) -> List[List[int]]:
     """
     Aplica o XOR (^) do estado com a chave_da_rodada.
 
@@ -188,7 +190,7 @@ def xor_com_chave(estado, chave_da_rodada):
             estado[i][j] ^= chave_da_rodada[i][j] # XOR do estado com a chave da rodada
     return estado
 
-def expande_chave(chave):
+def expande_chave(chave: List[int]) -> List[List[int]]:
     """
     Expande a chave de 128 bits (16 bytes) para gerar todas as subchaves das rodadas do AES
 
