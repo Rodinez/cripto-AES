@@ -125,14 +125,14 @@ def gmul(a: int, b: int) -> int:
     """
     p = 0
     for _ in range(8):
-        if b & 1:       # Se o último bit de b é 1
-            p ^= a      # XOR com a no produto parcial
+        if b & 1:                    # Se o último bit de b é 1
+            p ^= a                   # XOR com a no produto parcial
         maior_bit_setado = a & 0x80  # Verifica se o bit mais alto de a está setado
-        a = (a << 1) & 0xFF    # Desloca a para a esquerda (como multiplicar por x em GF(2))
+        a = (a << 1) & 0xFF          # Desloca a para a esquerda (como multiplicar por x em GF(2))
         
         if maior_bit_setado:         # Se houve overflow com o shift no maior bit de a
-            a ^= 0x1B          # Reduz módulo o polinômio irreducível x^8 + x^4 + x^3 + x + 1 (0x11B → apenas 0x1B pois já houve shift)
-        b >>= 1  # Desloca b para a direita (como dividir por x)
+            a ^= 0x1B                # Reduz módulo do polinômio irreducível x^8 + x^4 + x^3 + x + 1 (0x11B → apenas 0x1B pois já houve shift)
+        b >>= 1                      # Desloca b para a direita (como dividir por x)
     return p
 
 def embaralha_colunas(estado: List[int]) -> List[int]:
