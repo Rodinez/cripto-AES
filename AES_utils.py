@@ -184,7 +184,7 @@ def xor_com_chave(estado: List[List[int]], chave_da_rodada: List[List[int]]) -> 
     - **chave_da_rodada**: chave
 
     Saída:
-    - **estado**: matriz 4x4 com valores depois de aplicar XOR com a chave expandida
+    - **estado**: matriz 4x4 com valores depois de aplicar XOR com a chave expandida da rodada
     """
     for i in range(4):
         for j in range(4):
