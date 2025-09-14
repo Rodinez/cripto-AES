@@ -1,3 +1,18 @@
+"""
+Introdução à Criptografia - Trabalho 01 - AES - 128 bits
+
+Fernando Favareto Abromovick
+Gabriel Santos de Andrade
+Leonardo Prado Silva
+
+Instruções para compilação e execução:
+1 - Instalar python 3.11.X
+2 - Importar a biblioteca 'typing' que usamos para determinar melhor o tipo do argumento e retorno da função
+3 - Executar o código 'AES.py' tendo a biblioteca 'AES_utils.py' na mesma pasta, usando o comando: 'python AES.py' ou 'python3 AES.py'
+4 - Seguir a interface mostrada no terminal, escolhendo as opções de cifragem/decifragem e os formatos nos quais deseja enviar as chaves, cifras e textos.
+
+"""
+
 from AES_utils import *
 
 def main():
