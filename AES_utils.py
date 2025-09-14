@@ -209,7 +209,7 @@ def expande_chave(chave: List[int]) -> List[List[int]]:
     primeira_chave = [[lista_de_palavras[j][i] for j in range(4)] for i in range(4)] # Transposta da primeira chave
     chaves_por_rodada.append(primeira_chave)
     for i in range(4, 44):
-        temp = list(lista_de_palavras[i-1])  # Pega a última palavra gerada (usa-se list para copiar o valor)
+        temp = list(lista_de_palavras[i-1])  # Pega a última subchave gerada (usa-se list para copiar o valor)
         if i % 4 == 0: # A cada início de rodada...
             temp = temp[1:] + temp[:1] # Rotação de 1 posição à esquerda
             temp = [s_box[byte // 16][byte % 16] for byte in temp] # Substituição de cada byte com a S-box
